@@ -2,7 +2,7 @@ import logging
 import sys
 import logging
 
-from logger import setup_logging
+from .logger import setup_logging
 
 def error_message_detail(error, error_detail):
     exc_type, exc_value, exc_tb = error_detail
