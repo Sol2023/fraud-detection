@@ -45,7 +45,6 @@ def data_cleaning(df):
         for col in cols_to_fill:
             df[col].fillna("N/A", inplace=True)
 
-
         # merchant name cleaning
         df['merchant_name'] = df['merchantName'].apply(lambda x : x.split('#')[0].strip(" "))   
 
@@ -77,3 +76,158 @@ def data_cleaning(df):
         logging.error(CustomException(str(e), sys.exc_info()))
         sys.exit(1)
 
+
+def feature_engineering(df):
+
+    try:
+        logging.info("Feature engineering started")
+
+        # Merchant transaction outlier
+        merchant_transaction_summary = []
+
+        for merchant in df['merchant_name'].unique():
+            sub_df = df[df['merchant_name']==merchant]
+            trans = sub_df['transactionAmount'].describe().to_dict()
+            merchant_transaction_summary.append([merchant, trans])
+
+        merchant_transaction_summary = pd.DataFrame(merchant_transaction_summary, columns=['merchant_name', 'merchant_trans_summary'])
+
+        df = pd.merge(df, merchant_transaction_summary, on='merchant_name', how='left')
+
+        def classify_merchant_trans(transactionAmount, merchant_trans_summary):
+            p_75 = merchant_trans_summary['75%']
+            p_25 = merchant_trans_summary['25%']
+            IQR= (p_75-p_25)*1.5
+            if transactionAmount > p_75+IQR:
+                return 3 # transaction amount too big
+            elif transactionAmount< p_25 - IQR:
+                return 1 # transaction amount too samll
+            else:
+                return 2 # transaction amount normal
+
+        df['merchant_trans_outlier'] = df.apply(lambda x: classify_merchant_trans(x.transactionAmount, x.merchant_trans_summary), axis=1)
+
+        #Fraud ratio by merchant code
+
+        merchant_category_safety = pd.pivot_table(data=df, index ='merchantCategoryCode',
+                                          columns='isFraud',
+                                          values = 'customerId',
+                                          fill_value=0,
+                                          aggfunc='count')
+        merchant_category_safety['merchant_code_fraud_ratio'] = merchant_category_safety[True] / (merchant_category_safety[True]+merchant_category_safety[False])
+
+        merchant_category_safety.reset_index(inplace=True)
+
+        df = pd.merge(df, merchant_category_safety[['merchantCategoryCode', 'merchant_code_fraud_ratio']], on='merchantCategoryCode')
+    
+
+        #Fraud ratio by merchant name
+        merchant_name_fraud = pd.pivot_table(data=df, index='merchant_name', columns='isFraud',
+                                     values='customerId', aggfunc='count', fill_value=0).reset_index()
+        merchant_name_fraud['merchant_name_fraud_ratio'] = merchant_name_fraud[True]/ (merchant_name_fraud[True]+ merchant_name_fraud[False])
+
+
+        df = pd.merge(df, merchant_name_fraud[['merchant_name', 'merchant_name_fraud_ratio']], on ='merchant_name', how='left')
+
+        # Transaction gap
+        # Day gap between current datetime and last transaction datatime by customer
+        df.sort_values(by=['customerId', 'transactionDateTime'], inplace=True)
+        df['cus_trans_gap_by_second'] = df.groupby(['customerId'])['transactionDateTime'].diff()
+
+        # Day gap between current datetime and last transaction datatime by customer, by card
+        df.sort_values(by=['customerId', 'cardLast4Digits','transactionDateTime'], inplace=True)
+        df['cus_card_trans_gap_by_second'] = df.groupby(['customerId','cardLast4Digits'])['transactionDateTime'].diff()
+
+        def get_second(gap):
+            try:
+                res = gap.seconds
+            except:
+                res=-1
+            return res 
+
+        df['cus_trans_gap_by_second'] = df['cus_trans_gap_by_second'].apply(get_second)
+        df['cus_card_trans_gap_by_second'] = df['cus_card_trans_gap_by_second'].apply(get_second)
+
+        trans_freq_by_cus = df.groupby('customerId')['cus_trans_gap_by_second'].mean()
+        trans_freq_by_cus = pd.DataFrame({'customerId': trans_freq_by_cus.index, 'mean_cus_trans_gap': trans_freq_by_cus.values})
+
+        df = pd.merge(df, trans_freq_by_cus[['customerId', 'mean_cus_trans_gap']], on ='customerId', how='left')
+
+        trans_freq_by_cus_by_car = df.groupby('customerId')['cus_card_trans_gap_by_second'].mean()
+        trans_freq_by_cus_by_car = pd.DataFrame({'customerId': trans_freq_by_cus_by_car.index, 'mean_cus_card_trans_gap': trans_freq_by_cus_by_car.values})
+
+        df = pd.merge(df, trans_freq_by_cus_by_car[['customerId', 'mean_cus_card_trans_gap']], on ='customerId', how='left')
+
+        df['trans_gap_ratio_cus'] = df['cus_card_trans_gap_by_second'] / df['mean_cus_card_trans_gap']
+        df['trans_gap_ratio_card'] = df['cus_trans_gap_by_second'] / df['mean_cus_card_trans_gap']
+
+        df['trans_gap_ratio_cus'] = df['cus_card_trans_gap_by_second'] / df['mean_cus_card_trans_gap']
+        df['trans_gap_ratio_card'] = df['cus_trans_gap_by_second'] / df['mean_cus_card_trans_gap']
+
+        #Credit ratio
+        df['credit_used_ratio'] = df['transactionAmount'] / df['creditLimit']
+        df['credit_left_ratio'] = df['availableMoney']/ df['creditLimit']
+        df['balance_ratio'] = df['currentBalance'] / df['creditLimit']
+
+        # Transaction ratio by category and merchant
+        customer_category_summary = pd.pivot_table(data = df[df['isFraud']==False],
+                                           index = ['customerId', 'merchantCategoryCode'],
+                                           values = 'transactionAmount',
+                                           aggfunc=np.mean
+                                           ).reset_index()
+
+        customer_category_summary.rename(columns= {"transactionAmount": "cus_transaction_avg_amount_by_category"}, inplace=True)
+
+        df = pd.merge(df, customer_category_summary, on=['customerId', 'merchantCategoryCode'], how='left')
+        df['cus_trans_ratio_by_cat'] = df['transactionAmount'] / df['cus_transaction_avg_amount_by_category']
+
+        customer_merchant_summary = pd.pivot_table(data = df[df['isFraud']==False],
+                                           index = ['customerId', 'merchant_name'],
+                                           values = 'transactionAmount',
+                                           aggfunc=np.mean
+                                           ).reset_index()
+
+        customer_merchant_summary.rename(columns= {"transactionAmount": "cus_transaction_avg_amount_by_merchant"}, inplace=True)
+
+        df = pd.merge(df, customer_merchant_summary, on=['customerId', 'merchant_name'], how='left')
+        df['cus_trans_ratio_by_merchant'] = df['transactionAmount'] / df['cus_transaction_avg_amount_by_merchant']
+
+        # Boolean Features
+        #Combine columns cardCVV and enteredCVV as is_correct_CVV
+        df['is_correct_CVV'] = df['cardCVV']==df['enteredCVV']
+
+        df['is_acq_merchant_country_equal'] = df['acqCountry'] ==df['merchantCountryCode']
+
+        # # Extract features from 'transactionDataTime'
+        df['transaction_hour'] = df['transactionDateTime'].dt.hour
+        df['transaction_day_of_week'] = df['transactionDateTime'].dt.dayofweek
+        df['account_months'] = df['transactionDateTime'].dt.month - df['accountOpenDate'].dt.month
+
+
+        features = [
+            'is_acq_merchant_country_equal', 'pos_Entry_Mode', 'pos_Condition_Code',
+            'transaction_type', 'card_present', 
+            'merchant_trans_outlier', 'merchant_code_fraud_ratio',
+            'merchant_name_fraud_ratio', 
+            'mean_cus_card_trans_gap', 'credit_used_ratio', 'credit_left_ratio',
+            'balance_ratio',
+            'cus_trans_ratio_by_cat', 
+            'cus_trans_ratio_by_merchant', 'is_correct_CVV', 'transaction_hour',
+            'transaction_day_of_week', 'account_months','trans_gap_ratio_cus','trans_gap_ratio_card']
+
+        id = ['accountNumber','customerId']
+        target = 'isFraud'
+
+        df_cleaned = df[features+id+[target]]
+
+        df_cleaned.fillna(-99, inplace=True)
+        df_cleaned.replace(np.inf, 999, inplace=True)
+
+        logging.info("Feature engineering successful")
+
+        return df_cleaned
+
+
+    except Exception as e:
+        logging.error(CustomException(str(e), sys.exc_info()))
+        sys.exit(1)
