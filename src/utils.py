@@ -243,6 +243,21 @@ def feature_engineering(df):
         df_cleaned.fillna(-99, inplace=True)
         df_cleaned.replace(np.inf, 999, inplace=True)
 
+        df_cleaned[['pos_Entry_Mode', 'pos_Condition_Code', 'transaction_type', 'card_present', 
+                    'merchant_trans_outlier', 'merchant_code_fraud_ratio', 'merchant_name_fraud_ratio', 
+                    'mean_cus_card_trans_gap', 'credit_used_ratio', 'credit_left_ratio', 
+                    'balance_ratio', 'cus_trans_ratio_by_cat', 'cus_trans_ratio_by_merchant', 
+                    'transaction_hour', 'transaction_day_of_week', 'account_months', 'trans_gap_ratio_cus', 
+                    'trans_gap_ratio_card']] = df_cleaned[['pos_Entry_Mode', 'pos_Condition_Code', 'transaction_type', 'card_present', 
+                    'merchant_trans_outlier', 'merchant_code_fraud_ratio', 'merchant_name_fraud_ratio', 
+                    'mean_cus_card_trans_gap', 'credit_used_ratio', 'credit_left_ratio', 
+                    'balance_ratio', 'cus_trans_ratio_by_cat', 'cus_trans_ratio_by_merchant', 
+                    'transaction_hour', 'transaction_day_of_week', 'account_months', 'trans_gap_ratio_cus', 
+                    'trans_gap_ratio_card']].astype("float")
+        
+        df_cleaned[['is_acq_merchant_country_equal', 'is_correct_CVV', 'isFraud']] = df_cleaned[['is_acq_merchant_country_equal', 'is_correct_CVV', 'isFraud']].astype("boolean")
+
+
         logging.info("Feature engineering successful")
 
         return df_cleaned

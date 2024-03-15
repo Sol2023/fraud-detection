@@ -118,9 +118,9 @@
     <title>Credit Card Transaction Fraud Detection Demo</title>
 </head>
 <body>
-    <form action="{{ url_for('predict_datapoint')}}" method="post">
-    <h1>Credit Card Transaction Fraud Detection Demo</h1>
     
+    <h1>Credit Card Transaction Fraud Detection Demo</h1>
+    <form action="{{ url_for('predict_datapoint')}}" method="post">
         <label for="accountNumber">Account Number:</label>
         <input type="text" id="accountNumber" ><br><br>
 
@@ -289,5 +289,8 @@
 
         <button type="submit">Predict</button>
     </form>
+    <h2>
+        THE  prediction is {{results}}
+     </h2>
 </body>
 </html>
