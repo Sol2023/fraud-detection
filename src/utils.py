@@ -107,6 +107,8 @@ def feature_engineering(df):
 
         df['merchant_trans_outlier'] = df.apply(lambda x: classify_merchant_trans(x.transactionAmount, x.merchant_trans_summary), axis=1)
 
+        logging.info("merchant_trans_outlier created")
+
         #Fraud ratio by merchant code
 
         merchant_category_safety = pd.pivot_table(data=df, index ='merchantCategoryCode',
@@ -119,7 +121,8 @@ def feature_engineering(df):
         merchant_category_safety.reset_index(inplace=True)
 
         df = pd.merge(df, merchant_category_safety[['merchantCategoryCode', 'merchant_code_fraud_ratio']], on='merchantCategoryCode')
-    
+
+        logging.info("merchant_code_fraud_ratio created")
 
         #Fraud ratio by merchant name
         merchant_name_fraud = pd.pivot_table(data=df, index='merchant_name', columns='isFraud',
@@ -128,6 +131,8 @@ def feature_engineering(df):
 
 
         df = pd.merge(df, merchant_name_fraud[['merchant_name', 'merchant_name_fraud_ratio']], on ='merchant_name', how='left')
+
+        logging.info("merchant_name_fraud_ratio created")
 
         # Transaction gap
         # Day gap between current datetime and last transaction datatime by customer
@@ -164,10 +169,14 @@ def feature_engineering(df):
         df['trans_gap_ratio_cus'] = df['cus_card_trans_gap_by_second'] / df['mean_cus_card_trans_gap']
         df['trans_gap_ratio_card'] = df['cus_trans_gap_by_second'] / df['mean_cus_card_trans_gap']
 
+        logging.info("transaction gap features created")
+
         #Credit ratio
         df['credit_used_ratio'] = df['transactionAmount'] / df['creditLimit']
         df['credit_left_ratio'] = df['availableMoney']/ df['creditLimit']
         df['balance_ratio'] = df['currentBalance'] / df['creditLimit']
+
+        logging.info("credit ratio features created")
 
         # Transaction ratio by category and merchant
         customer_category_summary = pd.pivot_table(data = df[df['isFraud']==False],
@@ -192,18 +201,23 @@ def feature_engineering(df):
         df = pd.merge(df, customer_merchant_summary, on=['customerId', 'merchant_name'], how='left')
         df['cus_trans_ratio_by_merchant'] = df['transactionAmount'] / df['cus_transaction_avg_amount_by_merchant']
 
+        logging.info("transaction ratio by category and merchant features created")
+
         # Boolean Features
         #Combine columns cardCVV and enteredCVV as is_correct_CVV
         df['is_correct_CVV'] = df['cardCVV']==df['enteredCVV']
 
         df['is_acq_merchant_country_equal'] = df['acqCountry'] ==df['merchantCountryCode']
 
+        logging.info("Boolean features created")
+
         # # Extract features from 'transactionDataTime'
         df['transaction_hour'] = df['transactionDateTime'].dt.hour
         df['transaction_day_of_week'] = df['transactionDateTime'].dt.dayofweek
         df['account_months'] = df['transactionDateTime'].dt.month - df['accountOpenDate'].dt.month
 
-
+        logging.info("Time features created")
+        
         features = [
             'is_acq_merchant_country_equal', 'pos_Entry_Mode', 'pos_Condition_Code',
             'transaction_type', 'card_present', 
