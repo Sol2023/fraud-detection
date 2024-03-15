@@ -1,0 +1,293 @@
+<!-- <html>
+<body>
+    <div class="login">
+       <h1>Student Exam Performance Indicator</h1>
+   
+       <form action="{{ url_for('predict_datapoint')}}" method="post">
+        <h1>
+            <legend>Credit Card Fraud Prediction</legend>
+        </h1>
+        <div class="mb-3">
+            <label class="form-label">Gender</label>
+            <select class="form-control" name="gender" placeholder="Enter you Gender" required>
+                <option class="placeholder" selected disabled value="">Select your Gender</option>
+                <option value="male">
+                    Male
+                </option>
+                <option value="female">
+                    Female
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Race or Ethnicity</label>
+            <select class="form-control" name="ethnicity" placeholder="Enter you ethnicity" required>
+                <option class="placeholder" selected disabled value="">Select Ethnicity</option>
+                <option value="group A">
+                    Group A
+                </option>
+                <option value="group B">
+                    Group B
+                </option>
+                <option value="group C">
+                    Group C
+                </option>
+                <option value="group D">
+                    Group D
+                </option>
+                <option value="group E">
+                    Group E
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Parental Level of Education</label>
+            <select class="form-control" name="parental_level_of_education"
+                placeholder="Enter you Parent Education" required>
+                <option class="placeholder" selected disabled value="">Select Parent Education</option>
+                <option value="associate's degree">
+                    associate's degree
+                </option>
+                <option value="bachelor's degree">
+                    bachelor's degree
+                </option>
+                <option value="high school">
+                    high school
+                </option>
+                <option value="master's degree">
+                    master's degree
+                </option>
+                <option value="some college">
+                    some college
+                </option>
+                <option value="some high school">
+                    some high school
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Lunch Type</label>
+            <select class="form-control" name="lunch" placeholder="Enter you Lunch" required>
+                <option class="placeholder" selected disabled value="">Select Lunch Type</option>
+                <option value="free/reduced">
+                    free/reduced
+                </option>
+                <option value="standard">
+                    standard
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Test preparation Course</label>
+            <select class="form-control" name="test_preparation_course" placeholder="Enter you Course"
+                required>
+                <option class="placeholder" selected disabled value="">Select Test_course</option>
+                <option value="none">
+                    None
+                </option>
+                <option value="completed">
+                    Completed
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Writing Score out of 100</label>
+            <input class="form-control" type="number" name="reading_score"
+                placeholder="Enter your Reading score" min='0' max='100' />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Reading Score out of 100</label>
+            <input class="form-control" type="number" name="writing_score"
+                placeholder="Enter your Reading Score" min='0' max='100' />
+        </div>
+        <div class="mb-3">
+            <input class="btn btn-primary" type="submit" value="Predict your Maths Score" required />
+        </div>
+    </form>
+    <h2>
+       THE  prediction is {{results}}
+    </h2>
+   <body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Card Transaction Fraud Detection Demo</title>
+</head>
+<body>
+    <form action="{{ url_for('predict_datapoint')}}" method="post">
+    <h1>Credit Card Transaction Fraud Detection Demo</h1>
+    
+        <label for="accountNumber">Account Number:</label>
+        <input type="text" id="accountNumber" ><br><br>
+
+        <label for="customerId">Customer ID:</label>
+        <input type="text" id="customerId" ><br><br>
+
+        <label for="creditLimit">Credit Limit:</label>
+        <select id="creditLimit">
+            <option value="250.0">250.0</option>
+            <option value="500.0">500.0</option>
+            <option value="1000.0">1000.0</option>
+            <option value="2500.0">2500.0</option>
+            <option value="5000.0">5000.0</option>
+            <option value="7500.0">7500.0</option>
+            <option value="10000.0">10000.0</option>
+            <option value="15000.0">15000.0</option>
+            <option value="20000.0">20000.0</option>
+            <option value="50000.0">50000.0</option>
+        </select><br><br>
+
+        <label for="availableMoney">Available Money:</label>
+        <input type="number" id="availableMoney" ><br><br>
+
+        <label for="transactionDateTime">Transaction Date & Time:</label>
+        <input type="datetime-local" id="transactionDateTime"><br><br>
+
+        <label for="transactionAmount">Transaction Amount:</label>
+        <input type="number" id="transactionAmount"><br><br>
+
+        <label for="merchantName">Merchant Name:</label>
+        <select id="merchantName">
+            <option value="Uber">Uber</option>
+            <option value="AMC">AMC</option>
+            <option value="Play Store">Play Store</option>
+            <option value="Tim Hortons">Tim Hortons</option>
+            <option value="In-N-Out">In-N-Out</option>
+            <option value="Krispy Kreme">Krispy Kreme</option>
+            <option value="Shake Shack">Shake Shack</option>
+            <option value="Burger King">Burger King</option>
+            <option value="Five Guys">Five Guys</option>
+            <option value="Auntie Anne's">Auntie Anne's</option>
+            <option value="GreenCook">GreenCook</option>
+            <option value="Washington Repair">Washington Repair</option>
+            <option value="Eazy Tire">Eazy Tire</option>
+            <option value="Convenient Auto Services">Convenient Auto Services</option>
+            <option value="Shell Auto Body">Shell Auto Body</option>
+            <option value="Fast Auto Services">Fast Auto Services</option>
+            <option value="staples.com">staples.com</option>
+            <option value="Convenient Repair">Convenient Repair</option>
+            <option value="Shell Repair">Shell Repair</option>
+        </select><br><br>
+
+        <label for="acqCountry">Acquiring Country:</label>
+        <select id="acqCountry">
+            <option value="US">US</option>
+            <option value="">None</option>
+            <option value="CAN">CAN</option>
+            <option value="MEX">MEX</option>
+            <option value="PR">PR</option>
+        </select><br><br>
+
+        <label for="merchantCountryCode">Merchant Country Code:</label>
+        <select id="merchantCountryCode">
+            <option value="US">US</option>
+            <option value="CAN">CAN</option>
+            <option value="">None</option>
+            <option value="PR">PR</option>
+            <option value="MEX">MEX</option>
+        </select><br><br>
+
+        <label for="posEntryMode">POS Entry Mode:</label>
+        <select id="posEntryMode">
+            <option value="05">05</option>
+            <option value="09">09</option>
+            <option value="02">02</option>
+            <option value="90">90</option>
+            <option value="80">80</option>
+            <option value="N/A">N/A</option>
+        </select><br><br>
+
+        <label for="posConditionCode">POS Condition Code:</label>
+        <select id="posConditionCode">
+            <option value="08">08</option>
+            <option value="01">01</option>
+            <option value="99">99</option>
+            <option value="N/A">N/A</option>
+        </select><br><br>
+
+        <label for="merchantCategoryCode">Merchant Category Code:</label>
+        <select id="merchantCategoryCode">
+            <option value="rideshare">rideshare</option>
+            <option value="entertainment">entertainment</option>
+            <option value="mobileapps">mobileapps</option>
+            <option value="fastfood">fastfood</option>
+            <option value="food_delivery">food_delivery</option>
+            <option value="auto">auto</option>
+            <option value="online_retail">online_retail</option>
+            <option value="gym">gym</option>
+            <option value="health">health</option>
+            <option value="personal care">personal care</option>
+            <option value="food">food</option>
+            <option value="fuel">fuel</option>
+            <option value="online_subscriptions">online_subscriptions</option>
+            <option value="online_gifts">online_gifts</option>
+            <option value="hotels">hotels</option>
+            <option value="airline">airline</option>
+            <option value="furniture">furniture</option>
+            <option value="subscriptions">subscriptions</option>
+            <option value="cable/phone">cable/phone</option>
+        </select><br><br>
+
+        <label for="currentExpDate">Current Expiration Date:</label>
+        <input type="datetime-local" id="currentExpDate"><br><br>
+
+        <label for="accountOpenDate">Account Open Date:</label>
+        <input type="datetime-local" id="accountOpenDate"><br><br>
+
+        <label for="dateOfLastAddressChange">Date of Last Address Change:</label>
+        <input type="datetime-local" id="dateOfLastAddressChange"><br><br>
+
+        <label for="cardCVV">Card CVV:</label>
+        <input type="number" id="cardCVV" min="100" max="999"><br><br>
+
+        <label for="enteredCVV">Entered CVV:</label>
+        <input type="number" id="enteredCVV" min="100" max="999"><br><br>
+
+        <label for="cardLast4Digits">Card Last 4 Digits:</label>
+        <input type="number" id="cardLast4Digits" min="1000" max="9999"><br><br>
+
+        <label for="transactionType">Transaction Type:</label>
+        <select id="transactionType">
+            <option value="PURCHASE">PURCHASE</option>
+            <option value="REVERSAL">REVERSAL</option>
+            <option value="ADDRESS_VERIFICATION">ADDRESS_VERIFICATION</option>
+        </select><br><br>
+
+        <label for="echoBuffer">Echo Buffer:</label>
+        <input type="text" id="echoBuffer" value="null" readonly><br><br>
+
+        <label for="currentBalance">Current Balance:</label>
+        <input type="number" id="currentBalance" step="0.01"><br><br>
+
+        <label for="merchantCity">Merchant City:</label>
+        <input type="text" id="merchantCity" value="null" readonly><br><br>
+
+        <label for="merchantState">Merchant State:</label>
+        <input type="text" id="merchantState" value="null" readonly><br><br>
+
+        <label for="merchantZip">Merchant Zip:</label>
+        <input type="text" id="merchantZip" value="null" readonly><br><br>
+
+        <label for="cardPresent">Card Present:</label>
+        <input type="checkbox" id="cardPresent"><br><br>
+
+        <label for="posOnPremises">POS On Premises:</label>
+        <input type="text" id="posOnPremises" value="null" readonly><br><br>
+
+        <label for="recurringAuthInd">Recurring Auth Ind:</label>
+        <input type="text" id="recurringAuthInd" value="null" readonly><br><br>
+
+        <label for="expirationDateKeyInMatch">Expiration Date Key In Match:</label>
+        <input type="checkbox" id="expirationDateKeyInMatch"><br><br>
+
+        <!-- <label for="isFraud">Is Fraud:</label>
+        <input type="checkbox" id="isFraud"><br><br> -->
+
+        <button type="submit">Predict</button>
+    </form>
+</body>
+</html>
