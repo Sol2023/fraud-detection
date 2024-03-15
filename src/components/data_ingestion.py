@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 
 from src.components.data_transformation import DataTransformation, DataTransformationConfig
+from src.components.model_trainer import ModelTrainer, ModelTrainerConfig
 
 @dataclass
 class DataIngestionConfig:
@@ -75,4 +76,7 @@ if __name__ == "__main__":
     train_date, test_data =data_ingestion.initiate_data_ingestion()
 
     data_transformation = DataTransformation()
-    data_transformation.initiate_date_transformation(train_date, test_data)
+    train_arr, test_arr = data_transformation.initiate_date_transformation(train_date, test_data)
+
+    modeltrainer = ModelTrainer()
+    modeltrainer.initiate_model_trainer(train_arr, test_arr)

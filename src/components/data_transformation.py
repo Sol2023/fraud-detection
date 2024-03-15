@@ -15,6 +15,9 @@ from src.logger import setup_logging
 from src.utils import save_object,data_cleaning, feature_engineering
 import pickle
 
+import warnings
+warnings.filterwarnings('ignore')
+
 
 @dataclass
 class DataTransformationConfig:

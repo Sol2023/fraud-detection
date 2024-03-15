@@ -4,10 +4,15 @@ import sys
 import numpy as np
 import pandas as pd
 
+from sklearn.metrics import f1_score
+
 import dill
 import logging
 
 from src.exception import CustomException
+
+import warnings
+warnings.filterwarnings('ignore')
 
 def save_object(file_path, obj):
     try:
@@ -78,6 +83,7 @@ def data_cleaning(df):
 
 
 def feature_engineering(df):
+
 
     try:
         logging.info("Feature engineering started")
@@ -243,5 +249,50 @@ def feature_engineering(df):
 
 
     except Exception as e:
+
         logging.error(CustomException(str(e), sys.exc_info()))
         sys.exit(1)
+
+
+def evaluate_models(X_train, y_train, X_test, y_test, models):
+
+    try:
+
+        f1_scores = {}
+
+        for name, model in models:
+            model.fit(X_train, y_train)
+            y_pred = model.predict(X_test)
+            f1_scores[name] = f1_score(y_test, y_pred)
+
+        # Print each model's F1 score
+        f1_scores_df = pd.DataFrame(list(f1_scores.items()), columns=['Model', 'F1 Score'])
+        
+        print(f1_scores_df)
+
+        # return f1_scores
+
+        # Find the best model based on the F1 score
+        best_model_name = max(f1_scores, key=f1_scores.get)
+        best_model_score = f1_scores[best_model_name]
+        best_model = None
+        for name, model in models:
+            if name == best_model_name:
+                best_model = model
+                break
+        
+        return (
+            best_model_name,
+            best_model_score,
+            best_model
+        )
+
+    except Exception as e:
+        logging.error(CustomException(str(e), sys.exc_info()))
+        sys.exit(1)
+
+def get_model_by_name(model_name, models):
+    for name, model in models:
+        if name == model_name:
+            return model
+    return None  # Return None if model_name is not found
