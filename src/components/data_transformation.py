@@ -27,8 +27,15 @@ class DataTransformation:
         setup_logging
         try:
             logging.info("Initiating data transformation")
-            numeric_features = ["step", "amount", "oldbalanceOrg", "newbalanceOrig", "oldbalanceDest", "newbalanceDest"]
-            categorical_features = ["type"]
+
+            
+            numeric_features = [['creditLimit', 'availableMoney', 'transactionAmount', 'currentBalance']]
+            categorical_features = ['accountNumber', 'customerId', 'merchantName', 'acqCountry', 
+                                    'merchantCountryCode', 'posEntryMode', 'posConditionCode', 
+                                    'merchantCategoryCode', 'cardCVV', 'enteredCVV', 'cardLast4Digits', 
+                                    'transactionType', 'echoBuffer', 'merchantCity', 'merchantState', 
+                                    'merchantZip', 'cardPresent', 'posOnPremises', 'recurringAuthInd', 
+                                    'expirationDateKeyInMatch', 'isFraud']
 
             numeric_transformer = Pipeline(
                 steps=[
@@ -66,6 +73,13 @@ class DataTransformation:
             logging.info("Initiating data transformation")
             train_df = pd.read_csv(train_path)
             test_df = pd.read_csv(test_path)
+
+            # Convert to datetime
+            datetime_columns = ['transactionDateTime','currentExpDate','accountOpenDate','dateOfLastAddressChange']
+            train_df[datetime_columns] = train_df[datetime_columns].apply(pd.to_datetime)
+            test_df[datetime_columns] = test_df[datetime_columns].apply(pd.to_datetime)
+
+            #
 
             preprocessor = self.get_data_transformation_object()
 
