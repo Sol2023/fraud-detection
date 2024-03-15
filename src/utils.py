@@ -296,3 +296,11 @@ def get_model_by_name(model_name, models):
         if name == model_name:
             return model
     return None  # Return None if model_name is not found
+
+def load_object(file_path):
+    try:
+        with open(file_path, "rb") as file_obj:
+            return pickle.load(file_obj)
+
+    except Exception as e:
+        raise CustomException(e, sys)
