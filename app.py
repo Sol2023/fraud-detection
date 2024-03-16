@@ -5,6 +5,8 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline
 
+from src.config import *
+
 application = Flask(__name__)
 
 app = application 
@@ -89,10 +91,10 @@ def predict_datapoint():
 
         predict_pipeline=PredictPipeline()
         print("Mid Prediction")
-        results= predict_pipeline.predict(pred_df)
+        results= predict_pipeline.predict(pred_df[FINAL_FEATURES])
         print("After Prediction")
         print(results)
-        return render_template("home.html", results=results[0])
+        return render_template("home.html", results=True if results[0]==1 else False)
     
 
 if __name__=="__main__":

@@ -22,7 +22,8 @@ class PredictPipeline:
             # data_scaled=preprocessor.transform(features)
             data_cleaned = data_cleaning(features)
             data_cleaned.to_csv("artifacts/sample_cleaned.csv",index=False)
-            data_cleaned = feature_engineering(data_cleaned)
+            data_cleaned = feature_engineering_test(data_cleaned)
+            data_cleaned.to_csv("artifacts/sample_feature_engineered.csv",index=False)
             
             preds=model.predict(data_cleaned)
             print(preds)
