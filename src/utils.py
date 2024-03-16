@@ -200,6 +200,8 @@ def feature_engineering(df):
         # customer_category_summary.rename(columns= {"transactionAmount": "cus_transaction_avg_amount_by_category"}, inplace=True)
         customer_category_summary = pd.read_csv("artifacts/customer_category_summary.csv")
 
+        customer_category_summary['merchantCategoryCode']=customer_category_summary['merchantCategoryCode'].astype("category")
+        df['merchantCategoryCode'] =df['merchantCategoryCode'].astype("category")
 
         df = pd.merge(df, customer_category_summary, on=['customerId', 'merchantCategoryCode'], how='left')
         df['cus_trans_ratio_by_cat'] = float(df['transactionAmount']) / float(df['cus_transaction_avg_amount_by_category'])
@@ -213,6 +215,10 @@ def feature_engineering(df):
         # customer_merchant_summary.rename(columns= {"transactionAmount": "cus_transaction_avg_amount_by_merchant"}, inplace=True)
 
         customer_merchant_summary = pd.read_csv("artifacts/customer_merchant_summary.csv")
+
+        customer_merchant_summary['merchant_name']=customer_merchant_summary['merchant_name'].astype("category")
+        df['merchant_name'] =df['merchant_name'].astype("category")
+        
         df = pd.merge(df, customer_merchant_summary, on=['customerId', 'merchant_name'], how='left')
         df['cus_trans_ratio_by_merchant'] = float(df['transactionAmount']) / float(df['cus_transaction_avg_amount_by_merchant'])
 
