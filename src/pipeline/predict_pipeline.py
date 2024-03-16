@@ -4,6 +4,7 @@ import pandas as pd
 from src.exception import CustomException
 from src.utils import *
 from src.logger import *
+from src.config import *
 
 
 class PredictPipeline:
@@ -25,7 +26,7 @@ class PredictPipeline:
             data_cleaned = feature_engineering_test(data_cleaned)
             data_cleaned.to_csv("artifacts/sample_feature_engineered.csv",index=False)
             
-            preds=model.predict(data_cleaned)
+            preds=model.predict(data_cleaned[FINAL_FEATURES])
             print(preds)
             return preds
         

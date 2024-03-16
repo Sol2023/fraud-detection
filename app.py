@@ -91,10 +91,10 @@ def predict_datapoint():
 
         predict_pipeline=PredictPipeline()
         print("Mid Prediction")
-        results= predict_pipeline.predict(pred_df[FINAL_FEATURES])
+        results= predict_pipeline.predict(pred_df)
         print("After Prediction")
         print(results)
-        return render_template("home.html", results=True if results[0]==1 else False)
+        return render_template("home.html", results="Fraud" if results[0]==1 else "Regular Transaction")
     
 
 if __name__=="__main__":
