@@ -3,6 +3,7 @@ import os
 import pandas as pd
 from src.exception import CustomException
 from src.utils import *
+from src.logger import *
 
 
 class PredictPipeline:
@@ -10,6 +11,7 @@ class PredictPipeline:
         pass
 
     def predict(self,features):
+        setup_logging()
         try:
             model_path=os.path.join("artifacts","model.pkl")
             # preprocessor_path=os.path.join('artifacts','preprocessor.pkl')
