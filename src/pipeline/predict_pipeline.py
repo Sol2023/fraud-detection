@@ -21,8 +21,11 @@ class PredictPipeline:
             print("After Loading")
             # data_scaled=preprocessor.transform(features)
             data_cleaned = data_cleaning(features)
+            data_cleaned.to_csv("artifacts/sample_cleaned.csv",index=False)
             data_cleaned = feature_engineering(data_cleaned)
+            
             preds=model.predict(data_cleaned)
+            print(preds)
             return preds
         
         except Exception as e:
@@ -126,6 +129,9 @@ class CustomData:
                 'expirationDateKeyInMatch': [self.expirationDateKeyInMatch]
             }
 
+            df = pd.DataFrame(custom_data_input_dict)
+            sample_data_path = os.path.join("artifacts", "sample.csv")
+            df.to_csv(sample_data_path,index=False)
             return pd.DataFrame(custom_data_input_dict)
 
         except Exception as e:

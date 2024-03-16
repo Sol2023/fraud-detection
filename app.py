@@ -45,10 +45,10 @@ def predict_datapoint():
         merchantCity = request.form.get('merchantCity')
         merchantState = request.form.get('merchantState')
         merchantZip = request.form.get('merchantZip')
-        cardPresent = request.form.get('cardPresent')
+        cardPresent = True if request.form.get('cardPresent')=="on" else False
         posOnPremises = request.form.get('posOnPremises')
         recurringAuthInd = request.form.get('recurringAuthInd')
-        expirationDateKeyInMatch = request.form.get('expirationDateKeyInMatch')
+        expirationDateKeyInMatch = True if request.form.get('expirationDateKeyInMatch')== "on" else False
 
         data = CustomData(
 
@@ -91,6 +91,7 @@ def predict_datapoint():
         print("Mid Prediction")
         results= predict_pipeline.predict(pred_df)
         print("After Prediction")
+        print(results)
         return render_template("home.html", results=results[0])
     
 
