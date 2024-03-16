@@ -91,26 +91,24 @@ def feature_engineering(df):
         logging.info("Feature engineering started")
 
         # Merchant transaction outlier
-        merchant_transaction_summary = pd.read_csv("artifacts/merchant_transaction_summary.csv")
-        # merchant_transaction_summary = []
+        merchant_transaction_summary = []
 
-        # for merchant in df['merchant_name'].unique():
-        #     sub_df = df[df['merchant_name']==merchant]
-        #     trans = sub_df['transactionAmount'].describe().to_dict()
-        #     merchant_transaction_summary.append([merchant, trans])
+        for merchant in df['merchant_name'].unique():
+            sub_df = df[df['merchant_name']==merchant]
+            trans = sub_df['transactionAmount'].describe().to_dict()
+            merchant_transaction_summary.append([merchant, trans])
 
-        # merchant_transaction_summary = pd.DataFrame(merchant_transaction_summary, columns=['merchant_name', 'merchant_trans_summary'])
+        merchant_transaction_summary = pd.DataFrame(merchant_transaction_summary, columns=['merchant_name', 'merchant_trans_summary'])
 
         df = pd.merge(df, merchant_transaction_summary, on='merchant_name', how='left')
 
         def classify_merchant_trans(transactionAmount, merchant_trans_summary):
-            merchant_trans_summary=json.loads(merchant_trans_summary.replace("'", '"'))
             p_75 = merchant_trans_summary['75%']
             p_25 = merchant_trans_summary['25%']
             IQR= (p_75-p_25)*1.5
-            if float(transactionAmount) > p_75+IQR:
+            if transactionAmount > p_75+IQR:
                 return 3 # transaction amount too big
-            elif float(transactionAmount)< p_25 - IQR:
+            elif transactionAmount< p_25 - IQR:
                 return 1 # transaction amount too samll
             else:
                 return 2 # transaction amount normal
@@ -120,26 +118,24 @@ def feature_engineering(df):
         logging.info("merchant_trans_outlier created")
 
         #Fraud ratio by merchant code
-        merchant_category_safety = pd.read_csv("artifacts/merchant_category_safety.csv")
-        # merchant_category_safety = pd.pivot_table(data=df, index ='merchantCategoryCode',
-        #                                   columns='isFraud',
-        #                                   values = 'customerId',
-        #                                   fill_value=0,
-        #                                   aggfunc='count')
-        # merchant_category_safety['merchant_code_fraud_ratio'] = merchant_category_safety[True] / (merchant_category_safety[True]+merchant_category_safety[False])
 
-        # merchant_category_safety.reset_index(inplace=True)
+        merchant_category_safety = pd.pivot_table(data=df, index ='merchantCategoryCode',
+                                          columns='isFraud',
+                                          values = 'customerId',
+                                          fill_value=0,
+                                          aggfunc='count')
+        merchant_category_safety['merchant_code_fraud_ratio'] = merchant_category_safety[True] / (merchant_category_safety[True]+merchant_category_safety[False])
+
+        merchant_category_safety.reset_index(inplace=True)
 
         df = pd.merge(df, merchant_category_safety[['merchantCategoryCode', 'merchant_code_fraud_ratio']], on='merchantCategoryCode')
 
         logging.info("merchant_code_fraud_ratio created")
 
         #Fraud ratio by merchant name
-
-        merchant_name_fraud = pd.read_csv("artifacts/merchant_name_fraud.csv")
-        # merchant_name_fraud = pd.pivot_table(data=df, index='merchant_name', columns='isFraud',
-        #                              values='customerId', aggfunc='count', fill_value=0).reset_index()
-        # merchant_name_fraud['merchant_name_fraud_ratio'] = merchant_name_fraud[True]/ (merchant_name_fraud[True]+ merchant_name_fraud[False])
+        merchant_name_fraud = pd.pivot_table(data=df, index='merchant_name', columns='isFraud',
+                                     values='customerId', aggfunc='count', fill_value=0).reset_index()
+        merchant_name_fraud['merchant_name_fraud_ratio'] = merchant_name_fraud[True]/ (merchant_name_fraud[True]+ merchant_name_fraud[False])
 
 
         df = pd.merge(df, merchant_name_fraud[['merchant_name', 'merchant_name_fraud_ratio']], on ='merchant_name', how='left')
@@ -184,43 +180,34 @@ def feature_engineering(df):
         logging.info("transaction gap features created")
 
         #Credit ratio
-        df['credit_used_ratio'] = float(df['transactionAmount']) / float(df['creditLimit'])
-        df['credit_left_ratio'] = float(df['availableMoney'])/ float(df['creditLimit'])
-        df['balance_ratio'] = float(df['currentBalance']) / float(df['creditLimit'])
+        df['credit_used_ratio'] = df['transactionAmount'] / df['creditLimit']
+        df['credit_left_ratio'] = df['availableMoney']/ df['creditLimit']
+        df['balance_ratio'] = df['currentBalance'] / df['creditLimit']
 
         logging.info("credit ratio features created")
 
         # Transaction ratio by category and merchant
-        # customer_category_summary = pd.pivot_table(data = df[df['isFraud']==False],
-        #                                    index = ['customerId', 'merchantCategoryCode'],
-        #                                    values = 'transactionAmount',
-        #                                    aggfunc=np.mean
-        #                                    ).reset_index()
+        customer_category_summary = pd.pivot_table(data = df[df['isFraud']==False],
+                                           index = ['customerId', 'merchantCategoryCode'],
+                                           values = 'transactionAmount',
+                                           aggfunc=np.mean
+                                           ).reset_index()
 
-        # customer_category_summary.rename(columns= {"transactionAmount": "cus_transaction_avg_amount_by_category"}, inplace=True)
-        customer_category_summary = pd.read_csv("artifacts/customer_category_summary.csv")
-
-        customer_category_summary[['customerId', 'merchantCategoryCode']]=customer_category_summary[['customerId', 'merchantCategoryCode']].astype("category")
-        df[['customerId', 'merchantCategoryCode']] =df[['customerId', 'merchantCategoryCode']].astype("category")
+        customer_category_summary.rename(columns= {"transactionAmount": "cus_transaction_avg_amount_by_category"}, inplace=True)
 
         df = pd.merge(df, customer_category_summary, on=['customerId', 'merchantCategoryCode'], how='left')
-        df['cus_trans_ratio_by_cat'] = float(df['transactionAmount']) / float(df['cus_transaction_avg_amount_by_category'])
+        df['cus_trans_ratio_by_cat'] = df['transactionAmount'] / df['cus_transaction_avg_amount_by_category']
 
-        # customer_merchant_summary = pd.pivot_table(data = df[df['isFraud']==False],
-        #                                    index = ['customerId', 'merchant_name'],
-        #                                    values = 'transactionAmount',
-        #                                    aggfunc=np.mean
-        #                                    ).reset_index()
+        customer_merchant_summary = pd.pivot_table(data = df[df['isFraud']==False],
+                                           index = ['customerId', 'merchant_name'],
+                                           values = 'transactionAmount',
+                                           aggfunc=np.mean
+                                           ).reset_index()
 
-        # customer_merchant_summary.rename(columns= {"transactionAmount": "cus_transaction_avg_amount_by_merchant"}, inplace=True)
-
-        customer_merchant_summary = pd.read_csv("artifacts/customer_merchant_summary.csv")
-
-        customer_merchant_summary[['customerId', 'merchant_name']]=customer_merchant_summary[['customerId', 'merchant_name']].astype("category")
-        df[['customerId', 'merchant_name']] =df[['customerId', 'merchant_name']].astype("category")
+        customer_merchant_summary.rename(columns= {"transactionAmount": "cus_transaction_avg_amount_by_merchant"}, inplace=True)
 
         df = pd.merge(df, customer_merchant_summary, on=['customerId', 'merchant_name'], how='left')
-        df['cus_trans_ratio_by_merchant'] = float(df['transactionAmount']) / float(df['cus_transaction_avg_amount_by_merchant'])
+        df['cus_trans_ratio_by_merchant'] = df['transactionAmount'] / df['cus_transaction_avg_amount_by_merchant']
 
         logging.info("transaction ratio by category and merchant features created")
 
@@ -253,11 +240,7 @@ def feature_engineering(df):
         id = ['accountNumber','customerId']
         target = 'isFraud'
 
-        if 'isFraud' not in df.columns:
-            # df['isFraud'] = False
-            df_cleaned = df[features+id]
-        else:
-            df_cleaned = df[features+id+[target]]
+        df_cleaned = df[features+id+[target]]
 
         df_cleaned.fillna(-99, inplace=True)
         df_cleaned.replace(np.inf, 999, inplace=True)
@@ -274,11 +257,7 @@ def feature_engineering(df):
                     'transaction_hour', 'transaction_day_of_week', 'account_months', 'trans_gap_ratio_cus', 
                     'trans_gap_ratio_card']].astype("float")
         
-        if 'isFraud' not in df.columns:
-            df_cleaned[['is_acq_merchant_country_equal', 'is_correct_CVV']] = df_cleaned[['is_acq_merchant_country_equal', 'is_correct_CVV']].astype("boolean")
-
-        else:
-            df_cleaned[['is_acq_merchant_country_equal', 'is_correct_CVV', 'isFraud']] = df_cleaned[['is_acq_merchant_country_equal', 'is_correct_CVV', 'isFraud']].astype("boolean")
+        df_cleaned[['is_acq_merchant_country_equal', 'is_correct_CVV', 'isFraud']] = df_cleaned[['is_acq_merchant_country_equal', 'is_correct_CVV', 'isFraud']].astype("boolean")
 
 
         logging.info("Feature engineering successful")
