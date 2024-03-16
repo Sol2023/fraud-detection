@@ -22,6 +22,20 @@ The purpose of this project is to develop a machine learning model to identify f
 
 Train machine learning models using the engineered features to predict fraudulent transactions accurately. This step involves selecting appropriate algorithms, hyperparameter tuning, cross-validation, and evaluating model performance using relevant metrics such as precision, recall, and F1-score.
 
+## Flask API
+
+Applied flask api with front end page, where it allows user to input the transaction information for test purpose. When click predict, it will return the result that the transaction is Fruad or Normal Transaction
+
+![image](https://github.com/Sol2023/fraud-detection/assets/92194263/0f336f43-035e-4640-960d-80f1c0d76025)
+
+![image](https://github.com/Sol2023/fraud-detection/assets/92194263/7a22036a-5a71-4951-bde2-176f4e4cce5b)
+
+![image](https://github.com/Sol2023/fraud-detection/assets/92194263/131324a4-c4a6-4eca-b8c9-8ebba42b3846)
+
+
+
+
+
 ## Deployment
 
 Deploy the trained machine learning model using AWS cloud services for scalability and reliability. Implement engineering best practices for production deployment to ensure the model performs efficiently in real-time environments.
