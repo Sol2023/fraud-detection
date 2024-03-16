@@ -6,6 +6,8 @@ The purpose of this project is to develop a machine learning model to identify f
 
 ## Main Steps
 
+### Part One: Jupyter Notebook
+
 1. **Data Ingestion:** Obtain and collect the necessary data sources, such as credit card transaction records, for analysis.
 
 2. **Data Preprocessing:** Implement data preprocessing techniques such as data cleaning, missing value imputation, and scaling to prepare the data for analysis.
@@ -18,9 +20,12 @@ The purpose of this project is to develop a machine learning model to identify f
 
 6. **Model Interpretability:** Integrate modules for interpreting model predictions and understanding feature importance to gain insights into the factors contributing to fraudulent transactions.
 
-## Model Training
+### Part Two: Engineering
 
-Train machine learning models using the engineered features to predict fraudulent transactions accurately. This step involves selecting appropriate algorithms, hyperparameter tuning, cross-validation, and evaluating model performance using relevant metrics such as precision, recall, and F1-score.
+1. Structure shows as below:
+
+![image](https://github.com/Sol2023/fraud-detection/assets/92194263/b1ca07a6-6d8d-44f5-960b-9f1b008ff61e)
+
 
 ## Flask API
 
@@ -31,8 +36,6 @@ Applied flask api with front end page, where it allows user to input the transac
 ![image](https://github.com/Sol2023/fraud-detection/assets/92194263/7a22036a-5a71-4951-bde2-176f4e4cce5b)
 
 ![image](https://github.com/Sol2023/fraud-detection/assets/92194263/131324a4-c4a6-4eca-b8c9-8ebba42b3846)
-
-
 
 
 
