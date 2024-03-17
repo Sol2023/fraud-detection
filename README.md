@@ -46,10 +46,8 @@ Since my AWS account is no long active. So I just show the steps to deploy it in
 #### Step One: 
 create `.ebextension` fold, under which create a config file cale `python.config`, content shows as below: 
 
-`option_settings:
-
-  "aws:elasticbeanstalk: container:python":
-  
+`option_settings: \n
+  "aws:elasticbeanstalk: container:python": \n
     WSGAPath: application:application`
 
 
