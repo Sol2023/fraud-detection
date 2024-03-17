@@ -43,6 +43,9 @@ Applied flask api with front end page, where it allows user to input the transac
 
 Since my AWS account is no long active. So I just show the steps to deploy it in AWS cloud services using AWS Beanstalk
 
+![image](https://github.com/Sol2023/fraud-detection/assets/92194263/3ce7f9c5-2205-4df7-a08b-b42fd70dcc10)
+
+
 #### Step One: 
 create `.ebextension` fold, under which create a config file cale `python.config`, content shows as below: 
 ```
@@ -55,7 +58,9 @@ option_settings:
 change the name of `app.py` to `application.py` and delete debug=True as below:
 ```
 if __name__=="__main__":
-
     app.run(host="0.0.0.0")
-
 ```
+
+#### Step Three:
+
+Follow this step by step CI/CD setup [link](https://aws.plainenglish.io/setup-a-ci-cd-pipeline-using-aws-codepipeline-to-deploy-a-node-js-application-to-elastic-beanstalk-5c75fcaf72e0)
