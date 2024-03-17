@@ -41,5 +41,19 @@ Applied flask api with front end page, where it allows user to input the transac
 
 ## Deployment
 
-Deploy the trained machine learning model using AWS cloud services for scalability and reliability. Implement engineering best practices for production deployment to ensure the model performs efficiently in real-time environments.
+Since my AWS account is no long active. So I just show the steps to deploy it in AWS cloud services using AWS Beanstalk
+
+#### Step One: 
+create `.ebextension` fold, under which create a config file cale `python.config`, content shows as below: 
+
+`option_settings:
+  "aws:elasticbeanstalk: container:python":
+    WSGAPath: application:application`
+
+
+#### Step Two:
+change the name of `app.py` to `application.py` and delete debug=True as below:
+`if __name__=="__main__":
+    app.run(host="0.0.0.0")`
+
 
