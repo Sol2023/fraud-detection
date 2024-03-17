@@ -39,7 +39,7 @@ Applied flask api with front end page, where it allows user to input the transac
 
 
 
-## Deployment
+## Deployment in AWS Cloud
 
 Since my AWS account is no long active. So I just show the steps to deploy it in AWS cloud services using AWS Beanstalk
 
