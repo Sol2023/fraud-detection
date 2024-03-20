@@ -4,6 +4,12 @@
 
 The purpose of this project is to develop a machine learning model to identify fraudulent transactions based on customers' credit card transaction records.
 
+## Tech Stack 
+
+- Program langauge: Python;
+- Devops: Flask, Docker, AWS,
+- Version Control: Github, DVC
+
 ## Main Steps
 
 ### Part One: Jupyter Notebook
