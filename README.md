@@ -30,7 +30,8 @@ The purpose of this project is to develop a machine learning model to identify f
 
 1. Structure shows as below:
 
-![image](https://github.com/Sol2023/fraud-detection/assets/92194263/b1ca07a6-6d8d-44f5-960b-9f1b008ff61e)
+![image](https://github.com/Sol2023/fraud-detection/assets/92194263/0910c0bf-f027-4a34-86c3-f4ec74a4a3bf)
+
 
 
 ## Flask API
