@@ -6,7 +6,7 @@ The purpose of this project is to develop a machine learning model to identify f
 
 ## Tech Stack 
 
-- Program langauge: Python;
+- Program langauge: Python, HTML, CSS;
 - Devops: Flask, Docker, AWS,
 - Version Control: Github, DVC
 
